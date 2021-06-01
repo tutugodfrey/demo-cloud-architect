@@ -130,6 +130,105 @@ Resources:
       VpcId: !Ref VPC
       InternetGatewayId: !Ref InternetGateway
 
+  PublicRouteTable1:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub ${ProjectName}-${Environment}-Public-RT1
+
+  PublicRouteTableAssociation1:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PublicRouteTable1
+      SubnetId: !Ref PublicSubnet1
+
+  PublicRoute1:
+    Type: AWS::EC2::Route
+    Properties:
+      GatewayId: !Ref InternetGateway
+      RouteTableId: !Ref PublicRouteTable1
+      DestinationCidrBlock: 0.0.0.0/0
+  
+  PublicRouteTable2:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub ${ProjectName}-${Environment}-Public-RT2
+
+  PublicRouteTableAssociation2:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref PublicRouteTable2
+      SubnetId: !Ref PublicSubnet2
+
+  PublicRoute2:
+    Type: AWS::EC2::Route
+    Properties:
+      GatewayId: !Ref InternetGateway
+      RouteTableId: !Ref PublicRouteTable2
+      DestinationCidrBlock: 0.0.0.0/0
+
+  AppRouteTable1:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub ${ProjectName}-${Environment}-AppRT1
+  
+  AppRouteTable1SubnetAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref AppRouteTable1
+      SubnetId: !Ref AppSubnet1
+
+  AppRouteTable2:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub ${ProjectName}-${Environment}-AppRT2
+  
+  AppRouteTable2SubnetAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref AppRouteTable2
+      SubnetId: !Ref AppSubnet2
+
+  DataRouteTable1:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub ${ProjectName}-${Environment}-DataRT1
+  
+  DataRouteTable1SubnetAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref DataRouteTable1
+      SubnetId: !Ref DataSubnet1
+
+  DataRouteTable2:
+    Type: AWS::EC2::RouteTable
+    Properties:
+      VpcId: !Ref VPC
+      Tags:
+        - Key: Name
+          Value: !Sub ${ProjectName}-${Environment}-DataRT2
+  
+  DataRouteTable2SubnetAssociation:
+    Type: AWS::EC2::SubnetRouteTableAssociation
+    Properties:
+      RouteTableId: !Ref DataRouteTable2
+      SubnetId: !Ref DataSubnet2
+
+
 
 Outputs:
   VpcID:
@@ -251,3 +350,40 @@ Outputs:
     Value: !GetAtt DataSubnet2.AvailabilityZone
     Export:
       Name: !Sub ${ProjectName}-${Environment}-DataSubnet2
+  
+  PublicRouteTable1ID:
+    Description: ID of public route table 1
+    Value: !Ref PublicRouteTable1
+    Export:
+      Name: !Sub ${ProjectName}-${Environment}-PublicRouteTable1ID
+
+  PublicRouteTable2ID:
+    Description: ID of public route table 2
+    Value: !Ref PublicRouteTable2
+    Export:
+      Name: !Sub ${ProjectName}-${Environment}-PublicRouteTable2ID
+
+  AppRouteTable1ID:
+    Description: ID of AppRouteTable1
+    Value: !Ref AppRouteTable1
+    Export:
+      Name: !Sub ${ProjectName}-${Environment}-AppRT1ID
+
+  AppRouteTable2ID:
+    Description: ID of AppRouteTable2
+    Value: !Ref AppRouteTable2
+    Export:
+      Name: !Sub ${ProjectName}-${Environment}-AppRT2ID
+
+  DataRouteTable1Id:
+    Description: ID of DataRouteTable1
+    Value: !Ref DataRouteTable1
+    Export:
+      Name: !Sub ${ProjectName}-${Environment}-DataRT1ID
+
+  DataRouteTable2Id:
+    Description: ID of DataRouteTable2
+    Value: !Ref DataRouteTable2
+    Export:
+      Name: !Sub ${ProjectName}-${Environment}-DataRT2ID
+
