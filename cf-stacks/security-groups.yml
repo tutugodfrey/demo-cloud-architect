@@ -1,0 +1,42 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >
+  Deploy and manage security group needed across the architecture
+
+Parameters:
+  ProjectName:
+    Description: Specify the name of the project
+    Type: String
+    Default: DCA
+  Environment:
+    Description: Specify the environment in use
+    Type: String
+    Default: Dev
+
+Resources:
+  LoadBalancerSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: !Sub ${ProjectName} ${Environment} Security group
+      VpcId:
+        Fn::ImportValue: !Sub ${ProjectName}-${Environment}-VPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+          CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+        IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+        CidrIp: 0.0.0.0/0
+
+Outputs:
+  LoadBalancerSG:
+    Description: ID of Load Balancer Security group
+    Value: !Ref LoadBalancerSG
+    Export:
+      Name: !Sub ${ProjectName}-${Environment}-LoadBalancerSG

@@ -186,6 +186,14 @@ Resources:
       RouteTableId: !Ref AppRouteTable1
       SubnetId: !Ref AppSubnet1
 
+  AppGateway1Route:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+      RouteTableId:
+        Fn::ImportValue: !Sub ${ProjectName}-${Environment}-AppRT1ID
+
   AppRouteTable2:
     Type: AWS::EC2::RouteTable
     Properties:
@@ -199,6 +207,14 @@ Resources:
     Properties:
       RouteTableId: !Ref AppRouteTable2
       SubnetId: !Ref AppSubnet2
+
+  AppGateway2Route:
+    Type: AWS::EC2::Route
+    Properties:
+      DestinationCidrBlock: 0.0.0.0/0
+      GatewayId: !Ref InternetGateway
+      RouteTableId:
+        Fn::ImportValue: !Sub ${ProjectName}-${Environment}-AppRT2ID
 
   DataRouteTable1:
     Type: AWS::EC2::RouteTable
@@ -314,6 +330,13 @@ Outputs:
     Value: !GetAtt AppSubnet2.AvailabilityZone
     Export:
       Name: !Sub ${ProjectName}-${Environment}-AppSubnet2
+
+  AppSubnets:
+    Description: Return a list of IDs of the App Subnets
+    Value:
+      Fn::Join: [",", [ !Ref AppSubnet1, !Ref AppSubnet2 ]]
+    Export:
+      Name: !Sub ${ProjectName}-${Environment}-AppSubnets
 
   DataSubnet1ID:
     Description: ID of Data Subnet 1
