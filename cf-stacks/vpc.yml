@@ -79,7 +79,7 @@ Resources:
     Properties:
       VpcId: !Ref VPC
       AvailabilityZone: !Select [0, Fn::GetAZs: ""]
-      MapPublicIpOnLaunch: False
+      MapPublicIpOnLaunch: True
       CidrBlock: !Ref AppSubnet1Cidr
       Tags:
         - Key: Name
@@ -90,7 +90,7 @@ Resources:
     Properties:
       VpcId: !Ref VPC
       AvailabilityZone: !Select [1, Fn::GetAZs: ""]
-      MapPublicIpOnLaunch: False
+      MapPublicIpOnLaunch: True
       CidrBlock: !Ref AppSubnet2Cidr
       Tags:
         - Key: Name

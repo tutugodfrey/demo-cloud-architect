@@ -15,11 +15,17 @@ aws cloudformation update-stack --stack-name dca-nat-gateway-stack --template-bo
 # Create Security group stack
 aws cloudformation create-stack --stack-name dca-security-sg --template-body file://cf-stacks/security-groups.yml
 
+# Update the Security Group Stack
+aws cloudformation update-stack --stack-name dca-security-sg --template-body file://cf-stacks/security-groups.yml
+
 # Create the Load Balancer stack
 aws cloudformation create-stack --stack-name dca-loadbalancer --template-body file://cf-stacks/load-balancer.yml
 
 # Update the Load Balancer Stack
-aws cloudformation update-stack --stack-name dca-loadbalancer --template-body file://cf-stacks/load-balancer.yml
+aws cloudformation update-stack --stack-name dca-loadbalancer --template-body file://cf-stacks/load-balancer.
+
+# Create the app server stack
+aws cloudformation create-stack --stack-name app-servers --template-body file://cf-stacks/app-servers.yml
 
 # Deleting stacks
 aws cloudformation delete-stack --stack-name cda-pvc-stack # VPC Stack

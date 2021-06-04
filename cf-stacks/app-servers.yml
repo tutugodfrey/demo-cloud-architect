@@ -1,0 +1,75 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >
+  Provision App server with EC2 Auto Scaling group 
+  place under a LoadBalancer
+
+Parameters:
+  ProjectName:
+    Description: Specify the name of the project
+    Type: String
+    Default: DCA
+  Environment:
+    Description:  The environment in use
+    Type: String
+    Default: Dev
+  ImageId:
+    Description: The AMI ID to use for instances
+    Type: String
+    Default: ami-03368e982f317ae48 # Amazon Linux 2 AMI N. Virgina
+    # Default: ami-0e999cbd62129e3b1 # Amazon Linux 2 AMI Oregon 
+  InstanceType:
+    Description: Specify the capacity of the instance
+    Type: String
+    Default: t2.micro
+  KeyName:
+    Description: The ssh key to use for login
+    Type: String
+    Default: cloud-arch
+
+Resources:
+  AppServerLaunchTemplate:
+    Type: AWS::EC2::LaunchTemplate
+    Properties:
+      LaunchTemplateName: !Sub ${ProjectName}-${Environment}-Launch-Template
+      LaunchTemplateData:
+        ImageId: !Ref ImageId
+        InstanceType: !Ref InstanceType
+        KeyName: !Ref KeyName
+        SecurityGroupIds:
+         - Fn::ImportValue: !Sub ${ProjectName}-${Environment}-AppServerSG
+        UserData:
+          Fn::Base64: !Sub |
+            #! /bin/bash
+            yum update -y
+            yum install httpd -y
+            echo Hello world > /var/www/html/index.html
+            systemctl enable --now httpd
+            systemctl status httpd
+  
+  AppServerASG:
+    Type: AWS::AutoScaling::AutoScalingGroup
+    Properties:
+      LaunchTemplate: 
+        LaunchTemplateId: !Ref AppServerLaunchTemplate
+        Version: 1
+      VPCZoneIdentifier:
+        - Fn::ImportValue: !Sub ${ProjectName}-${Environment}-AppSubnets
+      DesiredCapacity: 1
+      MinSize: 1
+      MaxSize: 3
+      HealthCheckGracePeriod: 180
+      HealthCheckType: ELB
+      TargetGroupARNs:
+      - Fn::ImportValue: !Sub ${ProjectName}-${Environment}-AppTargetGroupARN
+      Tags:
+        - Key: Name
+          Value: !Sub ${ProjectName}-${Environment}-AppServer
+          PropagateAtLaunch: Yes
+
+
+Outputs:
+  LaunchTemplateARN:
+    Description: ARN of launch AppServer Launch Template
+    Value: !Ref AppServerLaunchTemplate
+    Export:
+      Name: !Sub ${ProjectName}-${Environment}-AppServer-LaunchTemplate
