@@ -16,7 +16,8 @@ Resources:
   LoadBalancerSG:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: !Sub ${ProjectName} ${Environment} Security group
+      GroupName: !Sub ${ProjectName}-${Environment}-LBSG
+      GroupDescription: !Sub ${ProjectName} ${Environment} Security Group
       VpcId:
         Fn::ImportValue: !Sub ${ProjectName}-${Environment}-VPC
       SecurityGroupIngress:
@@ -29,10 +30,35 @@ Resources:
           ToPort: 443
           CidrIp: 0.0.0.0/0
       SecurityGroupEgress:
-        IpProtocol: tcp
-        FromPort: 80
-        ToPort: 80
-        CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: !Sub ${ProjectName}-${Environment}-LB-SG
+  
+  AppServerSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: !Sub ${ProjectName}-${Environment}-AppServerSG
+      GroupName: !Sub ${ProjectName}-${Environment}-AppServer Security Group
+      VpcId:
+        Fn::ImportValue: !Sub ${ProjectName}-${Environment}-VPC
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+
+      Tags:
+        - Key: Name
+          Value: !Sub ${ProjectName}-${Environment}-AppServer-SG
+
 
 Outputs:
   LoadBalancerSG:
@@ -40,3 +66,9 @@ Outputs:
     Value: !Ref LoadBalancerSG
     Export:
       Name: !Sub ${ProjectName}-${Environment}-LoadBalancerSG
+
+  AppServerSGID:
+    Description: Security Group ID for App Servers
+    Value: !Ref AppServerSG
+    Export:
+      Name: !Sub ${ProjectName}-${Environment}-AppServerSG

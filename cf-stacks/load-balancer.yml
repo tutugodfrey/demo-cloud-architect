@@ -11,12 +11,16 @@ Parameters:
     Description: Specify the environment in use
     Type: String
     Default: Dev
+  LBName:
+    Description: Name of the Load Balancer to create
+    Type: String
+    Default: dca-lb-server
 
 Resources:
   AppServerLB:
     Type: AWS::ElasticLoadBalancingV2::LoadBalancer
     Properties:
-      Name: !Sub ${ProjectName}-${Environment}-LB
+      Name: !Ref LBName
       Type: application
       Scheme: internet-facing
       Subnets:
@@ -79,9 +83,3 @@ Outputs:
     Value: !Ref AppTargetGroup
     Export:
       Name: !Sub ${ProjectName}-${Environment}-AppTargetGroupARN
-
-  # LoadBalancerSG:
-  #   Description: SecurityGroup for the Load Balancer
-  #   Value: !GetAtt AppServerLB.SecurityGroups
-  #   Export:
-  #     Name: !Sub ${ProjectName}-${Environment}-LB-SG
