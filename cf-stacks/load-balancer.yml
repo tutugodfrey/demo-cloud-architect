@@ -78,6 +78,12 @@ Outputs:
     Export:
       Name: !Sub ${ProjectName}-${Environment}-LoadBalancerDNS
 
+  LoadBalancerDNS2:
+    Description: DNS of the Load Balancer
+    Value: !Join ["", [http://, !GetAtt AppServerLB.DNSName]]
+    Export:
+      Name: !Sub ${ProjectName}-${Environment}-LoadBalancerDNS2
+
   AppTargetGroupARN:
     Description: ARN of the app target group
     Value: !Ref AppTargetGroup
