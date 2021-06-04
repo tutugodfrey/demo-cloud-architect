@@ -1,0 +1,78 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >
+  Provision a cloudfront distribution for LB and S3 origins
+
+Parameters:
+  ProjectName:
+    Description: Specify the name of the project
+    Type: String
+    Default: DCA
+  Environment:
+    Description: The environment in use
+    Type: String
+    Default: Dev
+
+Resources:
+  Distribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        IPV6Enabled: False
+        Enabled: True
+        CacheBehaviors:
+          - PathPattern: /
+            TargetOriginId:
+              Fn::ImportValue: !Sub ${ProjectName}-${Environment}-LoadBalancerARN
+            ViewerProtocolPolicy: allow-all
+            ForwardedValues:
+              QueryString: false
+              Cookies:
+                Forward: none
+            AllowedMethods:
+              - GET
+              - HEAD
+        DefaultCacheBehavior:
+          ViewerProtocolPolicy: allow-all
+          ForwardedValues:
+            QueryString: false
+            Cookies:
+              Forward: none
+          AllowedMethods:
+            - GET
+            - HEAD
+          TargetOriginId:
+             Fn::ImportValue: !Sub ${ProjectName}-${Environment}-LoadBalancerARN
+        Origins:
+          - ConnectionTimeout: 3
+            ConnectionAttempts: 2
+            DomainName:
+              Fn::ImportValue: !Sub ${ProjectName}-${Environment}-LoadBalancerDNS
+            Id:
+               Fn::ImportValue: !Sub ${ProjectName}-${Environment}-LoadBalancerARN
+            CustomOriginConfig:
+              HTTPPort: 80
+              HTTPSPort: 443
+              OriginKeepaliveTimeout: 60
+              OriginReadTimeout: 5
+              OriginProtocolPolicy: http-only
+              OriginSSLProtocols:
+                - TLSv1
+                - TLSv1.1
+                - TLSv1.2
+                - SSLv3
+      Tags:
+        - Key: Name
+          Value: !Sub ${ProjectName}-${Environment}-CF
+
+Outputs:
+  DistributionID:
+    Description: ID of the Destribution
+    Value: !Ref Distribution
+    Export:
+      Name: !Sub ${ProjectName}-${Environment}-CloudFront-DistributionID
+
+  DistributionDomain:
+    Description: Domain Name of the cloudfront distribution
+    Value: !GetAtt Distribution.DomainName
+    Export:
+      Name: !Sub ${ProjectName}-${Environment}-DistributionDomain
