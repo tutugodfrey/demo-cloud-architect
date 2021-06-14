@@ -1,0 +1,44 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >
+  S3 stack for bucket to hold static content
+
+Parameters:
+  ProjectName:
+    Description: Specify the name of the project
+    Type: String
+    Default: DCA
+  Environment:
+    Description: The environment in use
+    Type: String
+    Default: Dev
+  BucketNamePrefix:
+    Description: Specify the name of S3 bucket to create
+    Type: String
+    Default: dca-dev
+
+Resources:
+  Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub ${BucketNamePrefix}-${AWS::AccountId}
+      WebsiteConfiguration:
+        ErrorDocument: error.html
+        IndexDocument: index.html
+        RoutingRules:
+          - RoutingRuleCondition:
+              HttpErrorCodeReturnedEquals: 404
+      Tags:
+        - Key: Purpose
+          Value: Website hosting
+
+Outputs:
+  BucketName:
+    Description: Bucket Name
+    Value: !Ref Bucket
+    Export:
+      Name: !Sub ${ProjectName}-${Environment}-BucketName
+  S3OriginURL:
+    Description: The Origin URL for accessing the bucket.
+    Value: !GetAtt Bucket.DomainName
+    Export:
+      Name: !Sub ${ProjectName}-${Environment}-S3OriginURL
