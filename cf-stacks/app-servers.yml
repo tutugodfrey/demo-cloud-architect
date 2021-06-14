@@ -15,8 +15,8 @@ Parameters:
   ImageId:
     Description: The AMI ID to use for instances
     Type: String
-    Default: ami-03368e982f317ae48 # Amazon Linux 2 AMI N. Virgina
-    # Default: ami-0e999cbd62129e3b1 # Amazon Linux 2 AMI Oregon 
+    # Default: ami-03368e982f317ae48 # Amazon Linux 2 AMI N. Virgina
+    Default: ami-0e999cbd62129e3b1 # Amazon Linux 2 AMI Oregon 
   InstanceType:
     Description: Specify the capacity of the instance
     Type: String
@@ -24,7 +24,7 @@ Parameters:
   KeyName:
     Description: The ssh key to use for login
     Type: String
-    Default: cloud-arch
+    Default: aws2-oregon-key
 
 Resources:
   AppServerLaunchTemplate:

@@ -13,16 +13,23 @@ Parameters:
     Default: Dev
 
 Resources:
+  CloudFrontOriginAccessIdentity:
+    Type: AWS::CloudFront::CloudFrontOriginAccessIdentity
+    Properties:
+      CloudFrontOriginAccessIdentityConfig:
+        Comment: Origin Access Identity for Serverless Static Website
+
   Distribution:
     Type: AWS::CloudFront::Distribution
     Properties:
       DistributionConfig:
         IPV6Enabled: False
         Enabled: True
+        DefaultRootObject: index.html
         CacheBehaviors:
           - PathPattern: /
             TargetOriginId:
-              Fn::ImportValue: !Sub ${ProjectName}-${Environment}-LoadBalancerARN
+              Fn::ImportValue: !Sub ${ProjectName}-${Environment}-BucketName
             ViewerProtocolPolicy: allow-all
             ForwardedValues:
               QueryString: false
@@ -34,14 +41,14 @@ Resources:
         DefaultCacheBehavior:
           ViewerProtocolPolicy: allow-all
           ForwardedValues:
-            QueryString: false
+            QueryString: False
             Cookies:
               Forward: none
           AllowedMethods:
             - GET
             - HEAD
           TargetOriginId:
-             Fn::ImportValue: !Sub ${ProjectName}-${Environment}-LoadBalancerARN
+             Fn::ImportValue: !Sub ${ProjectName}-${Environment}-BucketName
         Origins:
           - ConnectionTimeout: 3
             ConnectionAttempts: 2
@@ -60,6 +67,12 @@ Resources:
                 - TLSv1.1
                 - TLSv1.2
                 - SSLv3
+          - Id:
+              Fn::ImportValue: !Sub ${ProjectName}-${Environment}-BucketName
+            DomainName:
+              Fn::ImportValue: !Sub ${ProjectName}-${Environment}-S3OriginURL
+            S3OriginConfig:
+              OriginAccessIdentity: !Sub "origin-access-identity/cloudfront/${CloudFrontOriginAccessIdentity}"
       Tags:
         - Key: Name
           Value: !Sub ${ProjectName}-${Environment}-CF
