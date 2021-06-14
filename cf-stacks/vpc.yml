@@ -191,8 +191,7 @@ Resources:
     Properties:
       DestinationCidrBlock: 0.0.0.0/0
       GatewayId: !Ref InternetGateway
-      RouteTableId:
-        Fn::ImportValue: !Sub ${ProjectName}-${Environment}-AppRT1ID
+      RouteTableId: !Ref AppRouteTable1
 
   AppRouteTable2:
     Type: AWS::EC2::RouteTable
@@ -213,8 +212,7 @@ Resources:
     Properties:
       DestinationCidrBlock: 0.0.0.0/0
       GatewayId: !Ref InternetGateway
-      RouteTableId:
-        Fn::ImportValue: !Sub ${ProjectName}-${Environment}-AppRT2ID
+      RouteTableId: !Ref AppRouteTable2
 
   DataRouteTable1:
     Type: AWS::EC2::RouteTable
@@ -275,7 +273,7 @@ Outputs:
     Description: AZ of PublicSubnet1
     Value: !GetAtt PublicSubnet1.AvailabilityZone
     Export:
-      Name: !Sub ${ProjectName}-${Environment}PublicSubnet1AZ
+      Name: !Sub ${ProjectName}-${Environment}PublicSubnet1-AZ
 
   PublicSubnet2ID:
     Description: ID of PublicSubnet2
@@ -293,7 +291,7 @@ Outputs:
     Description: AZ of PublicSubnet2
     Value: !GetAtt PublicSubnet2.AvailabilityZone
     Export:
-      Name: !Sub ${ProjectName}-${Environment}PublicSubnet2AZ
+      Name: !Sub ${ProjectName}-${Environment}PublicSubnet2-AZ
 
   AppSubnet1ID:
     Description: ID of AppSubnet1
@@ -311,7 +309,7 @@ Outputs:
     Description: AZ of App Subnet 1
     Value: !GetAtt AppSubnet1.AvailabilityZone
     Export:
-      Name: !Sub ${ProjectName}-${Environment}-AppSubnet1
+      Name: !Sub ${ProjectName}-${Environment}-AppSubnet1-AZ
 
   AppSubnet2ID:
     Description: ID of AppSubnet2
@@ -329,7 +327,7 @@ Outputs:
     Description: AZ of App Subnet 2
     Value: !GetAtt AppSubnet2.AvailabilityZone
     Export:
-      Name: !Sub ${ProjectName}-${Environment}-AppSubnet2
+      Name: !Sub ${ProjectName}-${Environment}-AppSubnet2-AZ
 
   AppSubnets:
     Description: Return a list of IDs of the App Subnets
@@ -354,7 +352,7 @@ Outputs:
     Description: AZ of Data Subnet 1
     Value: !GetAtt DataSubnet1.AvailabilityZone
     Export:
-      Name: !Sub ${ProjectName}-${Environment}-DataSubnet1
+      Name: !Sub ${ProjectName}-${Environment}-DataSubnet1-AZ
 
   DataSubnet2ID:
     Description: ID of Data Subnet 2
@@ -372,7 +370,7 @@ Outputs:
     Description: AZ of Data Subnet 2
     Value: !GetAtt DataSubnet2.AvailabilityZone
     Export:
-      Name: !Sub ${ProjectName}-${Environment}-DataSubnet2
+      Name: !Sub ${ProjectName}-${Environment}-DataSubnet2-AZ
   
   PublicRouteTable1ID:
     Description: ID of public route table 1
@@ -409,4 +407,10 @@ Outputs:
     Value: !Ref DataRouteTable2
     Export:
       Name: !Sub ${ProjectName}-${Environment}-DataRT2ID
+
+  DataSubnets:
+    Description: Subnet group for the database subnet
+    Value: !Join [",", [ !Ref DataSubnet2, !Ref DataSubnet1]]
+    Export:
+      Name: !Sub ${ProjectName}-${Environment}-DataSubnetGroupaaa
 
