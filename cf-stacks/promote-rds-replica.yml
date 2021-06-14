@@ -1,0 +1,22 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >
+  Stack to promote an RDS Read Replica to master database
+
+Parameters:
+  ProjectName:
+    Description: Specify the nane of the project
+    Type: String
+    Default: DCA
+  Environment:
+    Description: Specify the environment in use
+    Type: String
+    Default: Dev
+  DBInstanceIdentifierPrefix:
+    Description: String to uniquely identify the database 
+
+Resources:
+  RDSPromote:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier: !Sub
+      
